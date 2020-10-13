@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "linux_parser.h"
 
@@ -66,8 +67,40 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { return 0.0; }
+// DONE: Read and return the system memory utilization
+float LinuxParser::MemoryUtilization() { 
+  string line;
+  string key;
+  double value;
+
+  std::unordered_map<std::string, double> meminfo;
+
+  std::ifstream filestream(kProcDirectory+kMeminfoFilename);
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        meminfo[key] = value;
+      }
+    }
+  }
+  // Memory utilization calculation:
+  // * Total used memory = MemTotal - MemFree
+  // * Non cache/buffer memory (green) = Total used memory - (Buffers + Cached memory)
+  // * Buffers (blue) = Buffers
+  // * Cached memory (yellow) = Cached + SReclaimable - Shmem
+  // * Swap = SwapTotal - SwapFree
+  // ref:https://stackoverflow.com/questions/41224738/how-to-calculate-system-memory-usage-from-proc-meminfo-like-htop/41251290#41251290
+
+  double totalUsedMem = meminfo["MemTotal"] - meminfo["MemFree"];
+  // double nonBuffCachMem /*green*/ = totalUsedMem - (meminfo["Buffers"]/*blue*/ + meminfo["Cached"]);
+  // double cachMem /*yellow*/ = meminfo["Cached"] + meminfo["SReclaimable"] - meminfo["Shmem"];
+  // double swap = meminfo["SwapTotal"] - meminfo["SwapFree"];
+
+  return float(totalUsedMem/meminfo["MemTotal"]); 
+}
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() { return 0; }
