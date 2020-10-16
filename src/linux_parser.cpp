@@ -103,7 +103,8 @@ float LinuxParser::MemoryUtilization() {
   return float(totalUsedMem/meminfo["MemTotal"]); 
 }
 
-// TODO: Read and return the system uptime
+// DONE: Read and return the system uptime
+// TODO: fix uptime not showing up in ./monitor.
 long int LinuxParser::UpTime() {
   std::string uptimestr;
   std::string idletimestr;
