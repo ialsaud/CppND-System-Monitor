@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <iostream>
 
 #include "linux_parser.h"
 
@@ -103,7 +104,23 @@ float LinuxParser::MemoryUtilization() {
 }
 
 // TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+long int LinuxParser::UpTime() {
+  std::string uptimestr;
+  std::string idletimestr;
+  long int uptime_sec{0};
+
+  string line;
+  std::ifstream filestream(kProcDirectory+kUptimeFilename);
+  if (filestream.is_open()) {
+    if (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      linestream >> uptimestr >> idletimestr;
+    }
+  }
+
+  uptime_sec = std::stol(uptimestr);
+  return uptime_sec;
+}
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
