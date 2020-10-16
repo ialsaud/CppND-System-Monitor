@@ -104,7 +104,6 @@ float LinuxParser::MemoryUtilization() {
 }
 
 // DONE: Read and return the system uptime
-// TODO: fix uptime not showing up in ./monitor.
 long int LinuxParser::UpTime() {
   std::string uptimestr;
   std::string idletimestr;
@@ -119,8 +118,7 @@ long int LinuxParser::UpTime() {
     }
   }
 
-  uptime_sec = std::stol(uptimestr);
-  return uptime_sec;
+  return std::stol(uptimestr);
 }
 
 // TODO: Read and return the number of jiffies for the system
