@@ -21,7 +21,7 @@ This project uses [Make](https://www.gnu.org/software/make/). The Makefile has f
 
 ## Screenshot
 
-![System Monitor](images/system monitor.png)
+![System Monitor](images/system_monitor.png)
 
 ## reference
 
