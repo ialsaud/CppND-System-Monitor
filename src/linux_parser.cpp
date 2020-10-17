@@ -218,9 +218,20 @@ int LinuxParser::RunningProcesses() {
   return -1;
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid[[maybe_unused]]) { return string(); }
+// DONE: Read and return the command associated with a process
+// /proc/[pid]/cmdline
+string LinuxParser::Command(int pid) {
+  string line, value;
+  std::ifstream filestream(kProcDirectory+to_string(pid)+kCmdlineFilename);
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      linestream >> value;
+      return value;
+    }
+  }
+  return "";
+}
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
@@ -243,7 +254,7 @@ string LinuxParser::Uid(int pid) {
       }
     }
   }
-  return "-1";
+  return "";
 }
 
 // DONE: Read and return the user associated with a process
@@ -265,7 +276,7 @@ string LinuxParser::User(int pid) {
       }
     }
   }
-  return "userNotFound";
+  return "";
 }
 
 // DONE: Read and return the uptime of a process 'in seconds'
