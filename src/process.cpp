@@ -27,7 +27,7 @@ float Process::CpuUtilization() {
     // reference: https://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat/16736599#16736599
     // cpu_usage = 100 * ((total_time / Hertz) / seconds)
 
-    float cpuUsage = 100*((LinuxParser::ActiveJiffies(pid)*1.0/CLOCKS_PER_SEC)/this->UpTime());
+    float cpuUsage = ((LinuxParser::ActiveJiffies(pid)*1.0/sysconf(_SC_CLK_TCK))/this->UpTime());
     cpuUtilization = cpuUsage;
     return cpuUsage;
 }

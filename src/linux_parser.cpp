@@ -287,7 +287,7 @@ long LinuxParser::UpTime(int pid) {
   if(pidStats.size() > 22){
     long sysUpTime = LinuxParser::UpTime();
     long procStartTime = std::stol(pidStats[21]); /*start time in jiffies*/ 
-    return long(sysUpTime - (procStartTime/CLOCKS_PER_SEC));
+    return long(sysUpTime - (procStartTime/sysconf(_SC_CLK_TCK)));
   }
   return 0;
 }
