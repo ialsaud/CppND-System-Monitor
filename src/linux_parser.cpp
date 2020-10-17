@@ -196,7 +196,7 @@ int LinuxParser::TotalProcesses() {
       }
     }
   }
-  return -1;
+  return 0;
 }
 
 // DONE: Read and return the number of running processes
@@ -287,6 +287,7 @@ string LinuxParser::User(int pid) {
         if (key == uid) {
           return value;
         }
+        value="";
       }
     }
   }
