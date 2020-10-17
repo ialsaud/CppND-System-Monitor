@@ -27,7 +27,8 @@ float Process::CpuUtilization() {
     // reference: https://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat/16736599#16736599
     // cpu_usage = 100 * ((total_time / Hertz) / seconds)
 
-    float cpuUsage = 100*((LinuxParser::ActiveJiffies(pid)*1.0/CLOCKS_PER_SEC)/LinuxParser::UpTime(pid));
+    float cpuUsage = 100*((LinuxParser::ActiveJiffies(pid)*1.0/CLOCKS_PER_SEC)/this->UpTime());
+    cpuUtilization = cpuUsage;
     return cpuUsage;
 }
 
@@ -43,8 +44,11 @@ string Process::User() {
 }
 
 // TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
+long int Process::UpTime() {
+    return LinuxParser::UpTime(pid);
+}
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+// DONE: Overload the "less than" comparison operator for Process objects
+bool Process::operator<(Process const& a) const {
+    return this->cpuUtilization < a.cpuUtilization;
+}
