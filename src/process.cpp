@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <time.h>
 
 #include "process.h"
 #include "linux_parser.h"
@@ -21,8 +22,14 @@ int Process::Pid() {
     return pid;
 }
 
-// TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+// DONE: Return this process's CPU utilization
+float Process::CpuUtilization() {
+    // reference: https://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat/16736599#16736599
+    // cpu_usage = 100 * ((total_time / Hertz) / seconds)
+
+    float cpuUsage = 100*((LinuxParser::ActiveJiffies(pid)*1.0/CLOCKS_PER_SEC)/LinuxParser::UpTime(pid));
+    return cpuUsage;
+}
 
 // TODO: Return the command that generated this process
 string Process::Command() { return string(); }

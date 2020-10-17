@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <time.h>
 
 #include "linux_parser.h"
 
@@ -123,9 +124,33 @@ long int LinuxParser::UpTime() {
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
 
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+// DONE: Read and return the number of active jiffies for a PID
+long LinuxParser::ActiveJiffies(int pid) {
+  string line, value;
+
+  vector<string> pidStats = {};
+  
+  std::ifstream filestream(kProcDirectory+to_string(pid)+kStatFilename);
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> value) {
+        pidStats.push_back(value);
+      }
+    }
+  }
+  if(pidStats.size() > 22){
+    long pidTotalTime = std::stol(pidStats[13])  //utime
+                      + std::stol(pidStats[14])  //stime
+                      + std::stol(pidStats[15])  //cutime
+                      + std::stol(pidStats[16]); //cstime
+
+    return pidTotalTime;
+  }
+  return 0;
+
+
+}
 
 // TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() { return 0; }
@@ -243,6 +268,26 @@ string LinuxParser::User(int pid) {
   return "userNotFound";
 }
 
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid[[maybe_unused]]) { return 0; }
+// DONE: Read and return the uptime of a process 'in seconds'
+// found at /proc/[PID]/stat
+long LinuxParser::UpTime(int pid) {
+  string line, value;
+
+  vector<string> pidStats = {};
+  
+  std::ifstream filestream(kProcDirectory+to_string(pid)+kStatFilename);
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> value) {
+        pidStats.push_back(value);
+      }
+    }
+  }
+  if(pidStats.size() > 22){
+    long sysUpTime = LinuxParser::UpTime();
+    long procStartTime = std::stol(pidStats[21]); /*start time in jiffies*/ 
+    return long(sysUpTime - (procStartTime/CLOCKS_PER_SEC));
+  }
+  return 0;
+}
